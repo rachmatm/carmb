@@ -88,8 +88,9 @@ The quantized model and config files are in `public/models/rmbg/`:
 - `preprocessor_config.json` - image preprocessing config
 - `onnx/model_quantized.onnx` - INT8 quantized ONNX model (44 MB)
 
-### 3. Build for production
+### 3. Test & build
 ```bash
+npm test             # Run unit tests (Vitest)
 npm run build        # TypeScript check + Vite production build
 npm run preview      # Preview production build locally
 ```
@@ -99,7 +100,16 @@ Deploy the `dist/` output to Vercel (stateless static site).
 
 ## Testing & Deployment
 
-### Testing Plan (pending)
+### Unit Tests
+
+Run with `npm test`. Uses Vitest.
+
+- [x] `formatBytes` — formats bytes to human readable (7 tests)
+- [x] `findPlateBox` — extracts largest plate bounding box (6 tests)
+- [x] TypeScript compilation passes
+- [x] Production build succeeds
+
+### Manual Testing Plan
 
 **Functional tests:**
 - [ ] Upload a car photo -> background removed correctly
@@ -111,7 +121,6 @@ Deploy the `dist/` output to Vercel (stateless static site).
 **Performance tests:**
 - [ ] Model loads within acceptable time on 4G connection
 - [ ] Inference completes within 5s for a 1920x1080 image
-- [ ] Progress bar accurately reflects download progress across all files
 - [ ] No memory leaks after processing multiple images
 
 **Browser compatibility:**
