@@ -1,5 +1,3 @@
-import { formatBytes } from './utils';
-
 // UI Query Selectors
 const fileInput = document.getElementById('upload') as HTMLInputElement;
 const originalCanvas = document.getElementById('original') as HTMLCanvasElement;
@@ -8,7 +6,6 @@ const ctxOrig = originalCanvas.getContext('2d')!;
 const ctxProc = processedCanvas.getContext('2d')!;
 const loadingEl = document.getElementById('loading')!;
 const loadingStatus = document.getElementById('loading-status') as HTMLDivElement;
-const loadingBar = document.getElementById('loading-bar') as HTMLDivElement;
 const processingEl = document.getElementById('processing') as HTMLDivElement;
 const processingStatus = document.getElementById('processing-status') as HTMLDivElement;
 const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
@@ -16,9 +13,6 @@ const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement
 let bgImage: HTMLImageElement | null = null;
 let plateImage: HTMLImageElement | null = null;
 let worker: Worker | null = null;
-
-// Track download progress across files
-const fileProgress = new Map<string, { loaded: number; total: number }>();
 
 // Max dimension for data sent to the worker (reduces transfer + memory)
 const MAX_TRANSFER_DIM = 1500;
@@ -53,45 +47,14 @@ async function init() {
             if (type === 'status') {
                 if (status === 'loading') {
                     loadingStatus.textContent = message;
-                    fileProgress.clear();
                 } else if (status === 'ready') {
                     loadingEl.style.display = 'none';
                     fileInput.disabled = false;
                 } else if (status === 'error') {
                     loadingStatus.textContent = `Error: ${message}`;
-                    loadingBar.style.width = '0%';
                 } else if (status === 'processing') {
                     processingStatus.textContent = message;
                 }
-            }
-
-            if (type === 'progress') {
-                const { model, file, loaded, total, status: progressStatus } = e.data;
-                const loadedBytes = Number(loaded) || 0;
-                const totalBytes = Number(total) || 0;
-
-                // Track per-file progress
-                if (progressStatus === 'done') {
-                    const entry = fileProgress.get(file);
-                    if (entry) entry.loaded = entry.total;
-                } else {
-                    fileProgress.set(file, { loaded: loadedBytes, total: totalBytes || fileProgress.get(file)?.total || 0 });
-                }
-
-                // Calculate overall progress across all files
-                let totalLoaded = 0;
-                let totalSize = 0;
-                for (const [, fp] of fileProgress) {
-                    totalLoaded += fp.loaded;
-                    totalSize += fp.total;
-                }
-
-                const pct = totalSize > 0 ? Math.min(100, Math.round((totalLoaded / totalSize) * 100)) : 0;
-                const sizeText = totalSize > 0
-                    ? `${formatBytes(totalLoaded)} / ${formatBytes(totalSize)}`
-                    : totalLoaded > 0 ? formatBytes(totalLoaded) : 'downloading...';
-                loadingStatus.textContent = `${model}: ${file.split('/').pop()} (${sizeText}) — ${pct}%`;
-                loadingBar.style.width = `${pct}%`;
             }
 
             if (type === 'result') {

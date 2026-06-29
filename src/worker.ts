@@ -54,18 +54,6 @@ async function loadPlateDetector() {
         session_options: {
             graphOptimizationLevel: 'disabled',
         },
-        progress_callback: (progress: any) => {
-            if (progress.status === 'download' || progress.status === 'done') {
-                self.postMessage({
-                    type: 'progress',
-                    model: 'Plate Detector',
-                    file: progress.file,
-                    loaded: progress.loaded,
-                    total: progress.total,
-                    status: progress.status,
-                });
-            }
-        },
     });
 }
 
@@ -84,18 +72,6 @@ self.onmessage = async (e: MessageEvent) => {
                 dtype: 'int8',
                 session_options: {
                     graphOptimizationLevel: 'disabled',
-                },
-                progress_callback: (progress: any) => {
-                    if (progress.status === 'download' || progress.status === 'done') {
-                        self.postMessage({
-                            type: 'progress',
-                            model: 'BG Remover (44 MB)',
-                            file: progress.file,
-                            loaded: progress.loaded,
-                            total: progress.total,
-                            status: progress.status,
-                        });
-                    }
                 },
             });
 
