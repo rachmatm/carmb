@@ -1,3 +1,5 @@
+import { formatBytes } from './utils';
+
 // UI Query Selectors
 const fileInput = document.getElementById('upload') as HTMLInputElement;
 const originalCanvas = document.getElementById('original') as HTMLCanvasElement;
@@ -20,14 +22,6 @@ const fileProgress = new Map<string, { loaded: number; total: number }>();
 
 // Max dimension for data sent to the worker (reduces transfer + memory)
 const MAX_TRANSFER_DIM = 1500;
-
-// Format bytes to human readable
-function formatBytes(bytes: number): string {
-    if (!bytes || isNaN(bytes) || bytes <= 0) return '0 B';
-    const units = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${units[i]}`;
-}
 
 // Helper to load an image as a promise
 function loadImage(src: string): Promise<HTMLImageElement> {
