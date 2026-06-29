@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Car Background Replacer - Runs in Your Browser</title>
+    <style>
+        body { font-family: system-ui, sans-serif; padding: 20px; background: #1a1a1a; color: #fff; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; line-height: 1.3em; }
+        *, *::before, *::after { box-sizing: inherit; }
+        .container { display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap; max-width: 1080px; }
+        .canvas-box { display: flex; flex-direction: column; align-items: center; position: relative; padding: 16px; border-radius: 8px; overflow: hidden; }
+        .canvas-wrapper { background-image: url('/placeholder.gif'); background-repeat: repeat; background-size: auto; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; }
+        canvas { max-width: 450px; width: 100%; border: 2px dashed #444; border-radius: 8px; background: transparent; }
+        input[type="file"] { margin: 12px 0 0; padding: 10px 16px; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        input[type="file"]:disabled { opacity: 0.5; cursor: not-allowed; }
+        #loading { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-top: 16px; }
+        #processing { display: none; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 16px; }
+        #processing-status { color: #ccc; font-size: 14px; max-width: 250px; }
+        #download-btn { display: none; margin-top: 12px; padding: 10px 24px; background: #4caf50; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        #download-btn:hover { background: #45a049; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #444; border-top: 3px solid #4caf50; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loading-status { color: #aaa; font-size: 13px;  max-width: 250px; }
+        #loading-bar-container { width: 200px; height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
+        #loading-bar { width: 0%; height: 100%; background: #4caf50; transition: width 0.3s; }
+
+        /* Mobile: stack boxes vertically, full width, center aligned */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .container { flex-direction: column; gap: 16px; }
+            .canvas-box { align-items: center; width: 100%; }
+            canvas { max-width: 100%; }
+            #loading-bar-container { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Car Background Replacer</h1>
+    <p>Upload a car photo to remove the background and replace the license plate. <br>The AI model (~44 MB) downloads once per browser and runs entirely on your device; no server, no uploads. <br>Speed depends on your hardware and browser resources (e.g. low battery may slow things down). <br>This is a demo; production will use a dedicated server and a superior AI Model.</p>
+        <div class="canvas-box">
+            <h3>Original</h3>
+            <div class="canvas-wrapper"><canvas id="original"></canvas></div>
+            <input type="file" id="upload" accept="image/*" disabled />
+            <div id="loading">
+                <div class="spinner"></div>
+                <div id="loading-status">Initializing model...</div>
+                <div id="loading-bar-container"><div id="loading-bar"></div></div>
+            </div>
+            <div id="processing">
+                <div class="spinner"></div>
+                <div id="processing-status">Processing image...</div>
+            </div>
+        </div>
+        <div class="canvas-box">
+            <h3>Processed</h3>
+            <div class="canvas-wrapper"><canvas id="processed"></canvas></div>
+            <button id="download-btn">Download</button>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
